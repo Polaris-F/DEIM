@@ -33,6 +33,11 @@ def main(args, ) -> None:
     assert not all([args.tuning, args.resume]), \
         'Only support from_scrach or resume or tuning at one time'
 
+    # if in debug mode, set summary_dir and output_dir to tmp directory:</home/lhf/Codes/WorkSpace/VisDrone/DEIM_all/tmp>
+    if args.debug:
+        args.output_dir = r'/home/lhf/Codes/WorkSpace/VisDrone/DEIM_all/tmp/output'
+        args.summary_dir = r'/home/lhf/Codes/WorkSpace/VisDrone/DEIM_all/tmp/summary'
+        # args.device = 'cpu'
 
     update_dict = yaml_utils.parse_cli(args.update)
     update_dict.update({k: v for k, v in args.__dict__.items() \
@@ -43,6 +48,7 @@ def main(args, ) -> None:
     if args.resume or args.tuning:
         if 'HGNetv2' in cfg.yaml_cfg:
             cfg.yaml_cfg['HGNetv2']['pretrained'] = False
+            print('HGNetv2 pretrained set to False Because of resuming or tuning')
 
     print('cfg: ', cfg.__dict__)
 
@@ -70,6 +76,8 @@ if __name__ == '__main__':
     parser.add_argument('--output-dir', type=str, help='output directoy')
     parser.add_argument('--summary-dir', type=str, help='tensorboard summry')
     parser.add_argument('--test-only', action='store_true', default=False,)
+    # add debug mode
+    parser.add_argument('--debug', action='store_true', default=False, help='debug mode')
 
     # priority 1
     parser.add_argument('-u', '--update', nargs='+', help='update yaml config')
